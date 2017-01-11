@@ -447,6 +447,89 @@ provides a typesafe alternative to test equality.
 
 ![Haskell Typeclassopedia](/img/typeclassopedia.png)
 
+## Combining, combining, combining...
+Functional programming is all about solving a problem by breaking down / decomposing a problem is very small problems
+and solve those small problems using functions. To be able to solve the big problem we must combine everything using
+combinators. Ehenever possible we must use functions to solve problems because you can easily combine/compose
+functions.
+
+For example, to solve a problem like validating a list of input values we can do the following breakdown:
+
+- aggregate values in a List,
+- transform those values into an effect eg Validation
+- test whether there are errors
+  - if there are errors, give me the errors
+  - if there are no errors, give me the sum of the values
+
+We could do it as follows:
+
+```scala
+import scalaz._
+import Scalaz._
+
+scala> def validateInput(input: String): ValidationNel[String, Int] = input.parseInt.leftMap(_.toString).toValidationNel
+validateInput: (input: String)scalaz.ValidationNel[String,Int]
+
+scala> List("1").map(validateInput).sequenceU.map(_.sum)
+res0: scalaz.Validation[scalaz.NonEmptyList[String],Int] = Success(1)
+
+scala> List("1", "2").map(validateInput).sequenceU.map(_.sum)
+res1: scalaz.Validation[scalaz.NonEmptyList[String],Int] = Success(3)
+
+scala> List("a", "b").map(validateInput).sequenceU.map(_.sum)
+res2: scalaz.Validation[scalaz.NonEmptyList[String],Int] = Failure(NonEmpty[java.lang.NumberFormatException: For input string: "a",java.lang.NumberFormatException: For input string: "b"])
+```
+
+We have validated two strings and when they are numbers we get the Success sum of those numbers, else the
+Failure with all the failures.
+
+We can solve this problem a bit shorter by using a Monoid and a utility method of Scalaz.
+
+There exists a Monoid[ValidationNel[String, Int]] instance:
+
+```scala
+scala> Monoid[ValidationNel[String, Int]]
+res0: scalaz.Monoid[scalaz.ValidationNel[String,Int]] = scalaz.ValidationInstances0$$anon$5@324f3f84
+```
+
+There is a convenience method on List that can use this monoid to combine the contents of the validation
+using that monoid instance:
+
+```scala
+import scalaz._
+import Scalaz._
+
+scala> def validateInput(input: String): ValidationNel[String, Int] = input.parseInt.leftMap(_.toString).toValidationNel
+validateInput: (input: String)scalaz.ValidationNel[String,Int]
+
+scala> List("1", "2").map(validateInput).suml
+res0: scalaz.ValidationNel[String,Int] = Success(3)
+
+scala> List("a", "2").map(validateInput).suml
+res1: scalaz.ValidationNel[String,Int] = Failure(NonEmpty[java.lang.NumberFormatException: For input string: "a"])
+```
+
+The suml does a left fold and uses a Monoid instance for the element type of the list. We start out with
+a List[String], then List[ValidationNel[String, Int]]. The `suml` method needs a Monoid[ValidationNel[String, Int]] and
+when one is found then it will be used to sum up all the Ints of the List[ValidationNel[String, Int]].
+
+When no Monoid[ValidationNel[String, Int]] is found, then the whole program won't even compile, because of Scala implicits.
+
+## Making things simple
+Scalaz does not only provide a bunch of type classes that are heavily inspired by the type classes as defined by the
+Haskell programming language, it also provides a lot of convenience methods that make working with type classes and
+combining these type classes with data structures very useful. The learning curve is knowing the which convenience
+methods there are, which type classes are there, and when it is logical to combine a type class with a convencience method
+and a data structure for solving a problem.
+
+Using type classes from standard libraries from for example Scalaz promotes standardization, developers start to recognize
+structures and over time makes (the learning curve) makes code very simple to read.
+
+Apart from the standardization and recognition, breaking down a problem is reusable parts like Semigroups, Monoids, Functors
+for example promotes reusable components because the type classes provide a very general abstraction because for most
+type classes you need a function f: A => B to operate on them, this means that the type class most of the time is unbiased
+about __what__ you are doing (the function) but is biased about the context of the computation (Validation, JsonFormat, Option) and so on.
+
 ## Equal
 [scalaz.Equal](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Equal.scala): A type safe alternative to universal equality.
 
@@ -563,16 +646,24 @@ res9: scalaz.Validation[scalaz.NonEmptyList[String],List[Int]] = Failure(NonEmpt
 ## Traverse
 [scalaz.Traverse](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Traverse.scala): Provides operations for traversing tructures
 
-```
-```
-
 ## Semigroup
-[scalaz.Semigroup](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Semigroup.scala): an associative binary operation
+[scalaz.Semigroup](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Semigroup.scala)
 
-A semigroup in type F must satisfy two laws:
+A semigroup is a set of 'A' together with a binary operation `def append(left: A, right: A): A` with symbol `|+|`
+which combines elements from A. The `|+|` operator is required to be associative.
+
+A semigroup in type A must satisfy two laws:
 
 - __closure__: '∀ a, b in F, append(a, b)' is also in 'F'. This is enforced by the type system.
 - __associativity___: '∀ a, b, c` in F, the equation 'append(append(a, b), c) = append(a, append(b , c))' holds.
+
+For example, the natural numbers under addition form a semigroup: the sum of any two natural numbers is a natural number,
+and (a+b)+c = a+(b+c) for any natural numbers a, b, and c,.
+
+The integers under multiplication also form a semigroup, as do the integers, Boolean values under conjunction and disjunction,
+lists under concatenation, functions from a set to itself under composition.
+
+Semigroups show up all over the place, once you know to look for them.
 
 ```scala
 import scalaz._
@@ -618,7 +709,10 @@ res0: Person = Person(ab,84)
 ## Monoid
 [scalaz.Monoid](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Monoid.scala): An associative binary operation with an identity element ('zero')
 
-Monoid instances must satisfy [[scalaz.Semigroup.SemigroupLaw]] and 2 additional laws:
+Many semigroups have a special element 'zero' for which the binary operation `def append(left: A, right: A): A` with symbol `|+|` is the identity.
+Such a _semigroup-with-identity-element_ is called a monoid.
+
+Monoid instances must satisfy the semigroup law and 2 additional laws:
 
 - __left identity__: 'forall a. append(zero, a) == a'
 - __right identity__: 'forall a. append(a, zero) == a'
@@ -735,6 +829,20 @@ scala> for {
 res12 Option[Int] = Some(2)
 ```
 
+## Terms
+- Auto (Greek): means 'self'
+- Iso (Greek): means 'equal'
+- Homos (Greek): means 'same'
+- Endos (Greek): means 'inside'
+- Morph (Greek): means 'form' or 'shape'
+- Morphism (Greek): 'to form' or 'to shape'
+- Cata (Greek): means 'downwards' or 'according to'
+- [Isomorphism](http://mathworld.wolfram.com/Isomorphism.html): Iso='equal' and Morphism='to shape': An [Isomorphism](https://en.wikipedia.org/wiki/Isomorphism)
+- [Automorphism](http://mathworld.wolfram.com/Automorphism.html): Auto='self', Morphism='to shape': An [Automorphism](https://en.wikipedia.org/wiki/Automorphism)
+- [Homomorphism](http://mathworld.wolfram.com/Homomorphism.html): Homos='same', Morphism='to shape': [Homomorphism](https://en.wikipedia.org/wiki/Homomorphism)
+- [Catamorphism](https://wiki.haskell.org/Catamorphisms): Cata='downwards', Morphism='to shape': An [Catamorphisms](https://en.wikipedia.org/wiki/Catamorphism)
+- [Endomorphism](http://mathworld.wolfram.com/Endomorphism.html): Endon='inside', Morphism='to shape': An [Endomorphism](https://en.wikipedia.org/wiki/Endomorphism) of a group is a homomorphism from one object to itself.
+
 ## YouTube
 - [(0'29 hr) Typeclasses in Scala - Dan Rosen](https://www.youtube.com/watch?v=sVMES4RZF-8)
 - [(0'31 hr) Introduction to Scalaz - Heiko Seeberger](https://www.youtube.com/watch?v=HW8Cl5-pGlk)
@@ -754,6 +862,7 @@ res12 Option[Int] = Some(2)
 - [The Neophyte's Guide to Scala Part 12: Type Classes - Daniel Westheide](http://danielwestheide.com/blog/2013/02/06/the-neophytes-guide-to-scala-part-12-type-classes.html)
 - [Demystifying Implicits and Typeclasses in Scala - Cake Solutions](http://www.cakesolutions.net/teamblogs/demystifying-implicits-and-typeclasses-in-scala)
 - [Scalaz and Typeclasses - Michele Sciabarra](http://michele.sciabarra.com/2015/11/11/scala/Scalaz-and-Typeclasses/)
+- [The Haskell Typeclassopedia](https://wiki.haskell.org/Typeclassopedia)
 - [The Road to the Typeclassopedia - Channing Walton](http://channingwalton.github.io/typeclassopedia/)
 
 ## Github
