@@ -571,7 +571,26 @@ res1: Boolean = false
 scala> Equal[String].equal("foo", "foof")
 res2: Boolean = false
 
+// the following test for equality
+// using the standard 'double-equals-symbol'
+// is an untyped equality test
+scala> List(1, 2, 3) == "a"
+res3: Boolean = false
 
+// scalaz provides the '===' or 'triple-equals-symbol' that is
+// a type-safe alternative to the standard 'double-equals-symbol'
+
+scala> List(1, 2, 3) === "a"
+<console>:28: error: type mismatch;
+ found   : String("a")
+ required: List[Int]
+       List(1, 2, 3) === "a"
+
+// The compiler agrees that testing a 'List' and 'String' for equality
+// makes no sense and shouldn't even compile.
+
+scala> List(1, 2, 3) === List(1, 2, 3)
+res4: Boolean = true
 ```
 
 ## Order
@@ -891,6 +910,7 @@ res12 Option[Int] = Some(2)
 - [Scalaz and Typeclasses - Michele Sciabarra](http://michele.sciabarra.com/2015/11/11/scala/Scalaz-and-Typeclasses/)
 - [The Haskell Typeclassopedia](https://wiki.haskell.org/Typeclassopedia)
 - [The Road to the Typeclassopedia - Channing Walton](http://channingwalton.github.io/typeclassopedia/)
+- [Effective Scala - Twitter](http://twitter.github.io/effectivescala/)
 
 ## Github
 - [My tinkering to understand the typeclassopedia - Channing Walton](https://github.com/channingwalton/typeclassopedia)
