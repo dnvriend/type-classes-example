@@ -1,6 +1,31 @@
 # type-classes-example
 A small study project on type classes, level of entry is 'beginner'.
 
+## Using the example
+Just clone the project:
+
+```bash
+git clone git@github.com:dnvriend/type-classes-example.git
+```
+
+Enter the directory and launch sbt.
+
+## Launching the test
+To launch the tests:
+
+```bash
+sbt test
+```
+
+## Launch the REPL
+To launch the REPL with [scalaz](https://github.com/scalaz/scalaz), [simulacrum](https://github.com/mpilquist/simulacrum),
+[play-json](https://github.com/playframework/play-json) and [akka-http-spray-json](https://github.com/akka/akka-http)
+on the classpath so you can use the abstractions of said libraries:
+
+```bash
+sbt console
+```
+
 ## Type Classes
 The following is taken from the fantastic book: [The Type Astronaut's Guide to Shapeless - Underscore](https://github.com/underscoreio/shapeless-guide).
 
@@ -545,6 +570,8 @@ res1: Boolean = false
 
 scala> Equal[String].equal("foo", "foof")
 res2: Boolean = false
+
+
 ```
 
 ## Order

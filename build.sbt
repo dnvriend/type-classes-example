@@ -55,3 +55,16 @@ headers := Map(
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 
 enablePlugins(AutomateHeaderPlugin, SbtScalariform)
+
+initialize ~= { _ =>
+  val ansi = System.getProperty("sbt.log.noformat", "false") != "true"
+  if (ansi) System.setProperty("scala.color", "true")
+}
+
+initialCommands in console := """
+import scalaz._, Scalaz._
+import scala.concurrent._
+import scala.collection.immutable._
+import scala.reflect.runtime.universe._
+import scala.concurrent.ExecutionContext.Implicits.global
+"""
