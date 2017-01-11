@@ -719,11 +719,20 @@ so in that sense its a monoid, and provides a way to sequence computation where 
 import scalaz._
 import Scalaz._
 
+// I advice not to use .bind but stick with using 'flatMap'
 scala> Monad[Option].bind(1.some)(x => Option(x + 1))
 res0: Option[Int] = Some(2)
 
 scala> 1.some >>= (x => Option(x + 1))
 res1: Option[Int] = Some(2)
+
+// I advice using the for-yield syntax for composing monads
+// and not using '>>='
+scala> for {
+     | x <- 1.some
+     | y <- Option(x + 1)
+     | } yield y
+res12 Option[Int] = Some(2)
 ```
 
 ## YouTube
@@ -738,9 +747,14 @@ res1: Option[Int] = Some(2)
 
 
 ## Resources
+- [Type Typeclassopedia - Slides](http://typeclassopedia.bitbucket.org/)
 - [The Type Astronaut's Guide to Shapeless - Underscore](https://github.com/underscoreio/shapeless-guide)
 - [learning Scalaz - Eugene Yokota](http://eed3si9n.com/learning-scalaz/7.0/)
 - [Simulacrum - Michael Pilquist](https://github.com/mpilquist/simulacrum)
 - [The Neophyte's Guide to Scala Part 12: Type Classes - Daniel Westheide](http://danielwestheide.com/blog/2013/02/06/the-neophytes-guide-to-scala-part-12-type-classes.html)
 - [Demystifying Implicits and Typeclasses in Scala - Cake Solutions](http://www.cakesolutions.net/teamblogs/demystifying-implicits-and-typeclasses-in-scala)
 - [Scalaz and Typeclasses - Michele Sciabarra](http://michele.sciabarra.com/2015/11/11/scala/Scalaz-and-Typeclasses/)
+- [The Road to the Typeclassopedia - Channing Walton](http://channingwalton.github.io/typeclassopedia/)
+
+## Github
+- [My tinkering to understand the typeclassopedia - Channing Walton](https://github.com/channingwalton/typeclassopedia)
