@@ -555,6 +555,365 @@ for example promotes reusable components because the type classes provide a very
 type classes you need a function f: A => B to operate on them, this means that the type class most of the time is unbiased
 about __what__ you are doing (the function) but is biased about the context of the computation (Validation, JsonFormat, Option) and so on.
 
+## Algebra
+Types are at the center of programming. A type is defined by the operations it provides and the laws of these operations. The laws
+of the operations is called the algebra of the type. When we think about the types we know like Int, Double or String we know
+that these types support arithmic operations like +, -, *, / and %. Moreover, most types share exactly the same behavior and that
+is a property that we can take advantage of in generic programming. We can now focus on the rules or rather the algebra of the computation.
+
+## Semigroup
+A Semigroup is a pure algebraic structure that is defined by the Semigroup laws. Scalaz provides a type called [scalaz.Semigroup](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Semigroup.scala),
+which provides an associative binary operation. Scalaz not only provides the type class but also instances of Semigroup for most
+standard scala types and Scalaz types like Validation that conform to the Semigroup laws.
+
+A semigroup is a set of 'A' together with a binary operation `def append(left: A, right: A): A` with symbol `|+|`
+which combines elements from A. The `|+|` operator is required to be associative.
+
+A semigroup in type A must satisfy two laws:
+
+- __closure__: '∀ a, b in F, append(a, b)' is also in 'F'. This is enforced by the type system.
+- __associativity___: '∀ a, b, c` in F, the equation 'append(append(a, b), c) = append(a, append(b , c))' holds.
+
+For example, the natural numbers under addition form a semigroup: the sum of any two natural numbers is a natural number,
+and (a+b)+c = a+(b+c) for any natural numbers a, b, and c,.
+
+```scala
+scala> val s = Semigroup[Int]
+s: scalaz.Semigroup[Int] = scalaz.std.AnyValInstances$$anon$5@537d2634
+
+scala> s.append(1, s.append(2, 3)) == s.append(s.append(1, 2), 3)
+res0: Boolean = true
+```
+
+The integers under multiplication also form a semigroup, as do the integers, Boolean values under conjunction and disjunction,
+lists under concatenation, functions from a set to itself under composition.
+
+Semigroups show up all over the place, once you know to look for them.
+
+```scala
+import scalaz._
+import Scalaz._
+
+scala> Semigroup[Int].append(1, 1)
+res0: Int = 2
+
+scala> 1 |+| 1
+res1: Int = 2
+
+scala> Semigroup[String].append("a", "b")
+res2: String = ab
+
+scala> "a" |+| "b"
+res3: String = ab
+
+scala> 1 |+| "1"
+<console>:18: error: type mismatch;
+ found   : String("1")
+ required: Int
+       1 |+| "1"
+
+```
+
+## Monoid
+A Monoid is a pure algebraic structure that is defined by the monoid laws. Scalaz provides a type called [scalaz.Monoid](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Monoid.scala),
+which provides an associative binary operation with an identity element ('zero'). Scalaz not only provides the type class but also instances of Monoid for most
+standard scala types and Scalaz types like Validation that conform to the Monoid laws.
+
+Many semigroups have a special element 'zero' for which the binary operation `def append(left: A, right: A): A` with symbol `|+|` is the identity.
+Such a _semigroup-with-identity-element_ is called a monoid.
+
+Monoid instances must satisfy the semigroup law and 2 additional laws:
+
+- __left identity__: 'forall a. append(zero, a) == a'
+- __right identity__: 'forall a. append(a, zero) == a'
+
+which translates to:
+
+```scala
+scala> Monoid[Int].append(Monoid[Int].zero, 1) == Monoid[Int].append(1, Monoid[Int].zero)
+res2: Boolean = true
+```
+
+What can we do with Monoids?
+- parallel computation,
+- build complex calculations from small pieces by combining them
+
+When you look for a Monoid, you'll find it everywhere!
+
+```scala
+import scalaz._
+import Scalaz._
+
+scala> Monoid[Int].append(1, 2)
+res0: Int = 3
+
+scala> Monoid[Int].multiply(20, 5)
+res1: Int = 100
+
+scala> Monoid[Int].isMZero(0)
+res2: Boolean = true
+
+scala> Monoid[Int].isMZero(1)
+res3: Boolean = false
+
+scala> Monoid[String].zero
+res4: String = ""
+
+scala> Monoid[Int].zero
+res5: Int = 0
+
+scala> Monoid[List[Int]].zero
+res6: List[Int] = List()
+
+scala> Monoid[Map[String, String]].zero
+res7: Map[String,String] = Map()
+
+scala> Monoid[String].multiply("a", 10)
+res8: String = aaaaaaaaaa
+```
+
+## 'About Those Monoids' by Eugene Yokota
+As you can see from the examples above, a Monoid is something that:
+
+- has a binary operation; so it is something like addition or multiplication,
+- the operands of the operation is of the same type; 1 + 1 where the (1) is an operand and both operands are of the same type,
+- the operation returns a value of the same type as the operands; so 1 + 1 = 2, the operation returns the value (2) which is of the same type as the operands.
+- the monoid has a property called 'zero' that is of the same type as the operands and the return value but the value of zero is chosen so that, when applying the operation on the operands, and one of the operands equals the zero value, the return value is equal to the other operands value.
+
+In practise it seems that both '* together with 1' ,'+ together with 0' and '++ along with List()', share some common properties:
+
+> The function takes two parameters. - The parameters and the returned value have the same type. - There exists such a value that doesn’t change other values when used with the binary function.
+
+```scala
+scala> 4 * 1
+res0: Int = 4
+
+scala> 1 * 9
+res1: Int = 9
+
+scala> List(1, 2, 3) ++ List()
+res2: List[Int] = List(1, 2, 3)
+
+scala> List() ++ List(1, 2, 3)
+res3: List[Int] = List(1, 2, 3)
+
+scala> 0 + 1
+res4: Int = 1
+
+scala> 1 + 0
+res5: Int = 1
+```
+
+> It doesn’t matter if we do (3 * 4) * 5 or 3 * (4 * 5). Either way, the result is 60. The same goes for ++.
+> We call this property associativity. * is associative, and so is ++, but -, for example, is not.
+
+The property associativity can be defined in a rule and we can use [ScalaCheck](https://www.scalacheck.org/)
+to create property objects that we can use to test it:
+
+```scala
+// we must first import the scalacheck classes
+scala> import org.scalacheck._
+import org.scalacheck._
+
+// we must define a Generator because we will generate some numbers
+// and apply the assertion with random numbers to test whether
+// or not the invariant holds:
+scala> val numbers = Gen.chooseNum(Long.MinValue, Long.MaxValue)
+numbers: org.scalacheck.Gen[Long] = org.scalacheck.Gen$$anon$1@129c7443
+
+// we define the association rule in a method
+scala> def associationRule(x: Long, y: Long, z: Long): Boolean = x * (y * z) == (x * y) * z
+associationRule: (x: Long, y: Long, z: Long)Boolean
+
+// we will create an object called a 'Property' or 'Prop' for short, and we need
+// another import for that
+scala> import org.scalacheck.Prop.forAll
+import org.scalacheck.Prop.forAll
+
+// here we use some Scala syntactic sugar to convert the
+// associationRule method to a function of (Long, Long, Long) => Boolean
+//
+// The forAll() methods needs three generators, so three times our
+// numbers generator so the function can be applied
+scala> forAll(numbers, numbers, numbers)(associationRule)
+res0: org.scalacheck.Prop = Prop
+
+// of course we can write it all in explicit style:
+scala> forAll(numbers, numbers, numbers)((x: Long, y: Long, z: Long) => associationRule(x, y, z))
+res1: org.scalacheck.Prop = Prop
+
+// we can now test the property
+scala> res1.check
++ OK, passed 100 tests.
+```
+
+## So what is a Monoid?
+A monoid is when you have an associative binary function and a value which acts as an identity with respect to that function.
+
+The binary operation that the monoid supports is `append` or symbolic `|+|`, which It takes two values of the same type and returns a value of that type.
+
+The `identity` value of Monoid is called `zero` in Scalaz:
+
+```scala
+scala> Monoid[Int].zero
+res0: Int = 0
+
+// sure enough, when applying the zero of the Monoid to the 'plus' operation
+// we get a '1' back, which holds true for every value?
+scala> 1 + Monoid[Int].zero
+res1: Int = 1
+
+import org.scalacheck._
+import org.scalacheck.Prop.forAll
+
+scala> val numbers = Gen.chooseNum(Long.MinValue, Long.MaxValue)
+numbers: org.scalacheck.Gen[Long] = org.scalacheck.Gen$$anon$1@63d2f26c
+
+scala> forAll(numbers)(x => x + Monoid[Long].zero == x)
+res2: org.scalacheck.Prop = Prop
+
+// yes it does!
+scala> res2.check
++ OK, passed 100 tests.
+```
+
+## Monoids and Multiplication
+Scalaz returns a Monoid with a zero for addition when we use the Monoid[Long] summoner, and that zero is of value '0',
+but for multiplication we need an identity value of 1. How do we instruct Scalaz to return a Monoid for multiplication?
+
+We must use a Tagged type:
+
+```scala
+scala> Monoid[Long @@ Tags.Multiplication].zero
+res0: scalaz.@@[Long,scalaz.Tags.Multiplication] = 1
+
+// so we can do the following multiplication
+scala> Tags.Multiplication(10) |+| Monoid[Int @@ Tags.Multiplication].zero
+res1: scalaz.@@[Int,scalaz.Tags.Multiplication] = 10
+
+// note, when we want to use the 'addition' Monoid we just write
+// so we must wrap the left operand in a Tags.Multiplication when we
+// want to do multiplication, else we dont.
+scala> 10 |+| Monoid[Int].zero
+res2: Int = 10
+```
+
+We can now do the following:
+
+```scala
+// 'add' stuff together using a Monoid that does multiplication
+scala> def add[A](xs: List[A @@ Tags.Multiplication])(implicit m: Monoid[A @@ Tags.Multiplication]): A @@ Tags.Multiplication = xs.foldLeft(m.zero)(m.append(_, _))
+add: [A](xs: List[scalaz.@@[A,scalaz.Tags.Multiplication]])(implicit m: scalaz.Monoid[scalaz.@@[A,scalaz.Tags.Multiplication]])scalaz.@@[A,scalaz.Tags.Multiplication]
+
+// of course, when we call the method, it needs elements not of 'A' but of 'A @@ Multiplication' so we need to map
+// all the elements
+scala> add(List(1, 2, 3, 4).map(Tags.Multiplication(_)))
+res0: scalaz.@@[Int,scalaz.Tags.Multiplication] = 24
+
+// note that the result is tagged as Multiplication so we
+// now that it is the result of a Multiplication
+// We can unwrap the tagged value:
+scala> val x: Int = Tag.unwrap(res0)
+x: Int = 24
+```
+
+When you think about it, the Tag or '@@' annotation doesn't let us 'plug-in' the wrong Monoid in our computation. If
+we could just replace an 'Addition' Monoid with a 'Multiplication' Monoid, we could accidentally get the wrong result
+and as you see, the result wouldn't say anyting about the computation because with normal computation, the type
+doesn't tell us anything about the computation.
+
+I think the solution of Scalaz makes the computation explicit and I like that approach.
+
+## Calculating factorials
+In mathematics, the factorial of a non-negative integer n, denoted by n!, is the product of all positive integers less than or equal to n. For example:
+
+```
+5! = 5 * 4 * 3 * 2 * 1 = 120
+```
+
+__Note__: 0! means an 'empty product' and is by convention always equal to '1', so '0! == 1'
+
+We can calulate a factorial with our Multiplication Monoid when the contents of the collection contains all the elements of the factorial
+so (1, 2, 3, 4, 5) without duplications:
+
+```scala
+scala> def factorial[A](xs: List[A @@ Tags.Multiplication])(implicit m: Monoid[A @@ Tags.Multiplication]): A @@ Tags.Multiplication = xs.foldLeft(m.zero)(m.append(_, _))
+factorial: [A](xs: List[scalaz.@@[A,scalaz.Tags.Multiplication]])(implicit m: scalaz.Monoid[scalaz.@@[A,scalaz.Tags.Multiplication]])scalaz.@@[A,scalaz.Tags.Multiplication]
+
+scala> factorial(List(1, 2, 3, 4, 5).map(Tags.Multiplication(_)))
+res1: scalaz.@@[Int,scalaz.Tags.Multiplication] = 120
+```
+
+## Monoids and foldable collections
+A Monoid can be used with the standard scala collections that support the `foldLeft` and `foldRight` functions for example
+Seq, List, Set, Vector, Array, Map[K, V]. The foldLeft operation is left associative and foldRight operation is right associative.
+
+Of course, Scalaz provides the [scalaz.Foldable](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Foldable.scala) type class and
+Foldable type class instances that beside the foldLeft and foldRight methods, provides convenience methods that implicitly uses a Monoid to aggregate
+results, which makes folding structures less verbose.
+
+Because the monoid is associative, you get the same result whether you use foldLeft or foldRight.
+
+```scala
+// without using the Monoid, we must select an operation that we know is associative:
+scala> List(1, 2, 3).foldLeft(0)(_ + _)
+res0: Int = 6
+
+// with the Monoid, we don't have to worry about the rules, when there is a Monoid of the supporting type
+// then its proven to be associative (well, when you have tested the Monoid with the Monoid rules that is...)
+// so we can just apply it on our collection
+scala> List(1, 2, 3).foldLeft(Monoid[Int].zero)(Monoid[Int].append(_, _))
+res1: Int = 6
+
+// we can even define a generic fold method that can fold every 'A',
+// when there is a Monoid[A] type class instance
+scala> def fold[A](xs: List[A])(implicit m: Monoid[A]): A = xs.fold(m.zero)(m.append(_, _))
+fold: [A](xs: List[A])(implicit m: scalaz.Monoid[A])A
+
+scala> fold(List(1, 2, 3))
+res2: Int = 6
+
+// the type class Foldable provides a 'fold' method that does just that.
+// Foldable 'folds' structures eg. a List structure to an A when there is a
+// Monoid of A:
+scala> Foldable[List].fold(List(1, 2, 3))
+res3: Int = 6
+
+// we can rewrite our generic fold method to:
+// we need the context-bound syntax to get a Monoid[A] that will be used by
+// the Foldable[A]
+def fold[A: Monoid](xs: List[A])(implicit f: Foldable[A]): A = f.fold(xs)
+
+scala> fold(List(1, 2, 3))
+res4: Int = 6
+
+// we can even make it more generic and fold every shape
+// where we have a foldable for and a Monoid for the element type
+scala> def fold[F[_], A: Monoid](xs: F[A])(implicit f: Foldable[F]): A = f.fold(xs)
+fold: [F[_], A](xs: F[A])(implicit evidence$1: scalaz.Monoid[A], implicit f: scalaz.Foldable[F])A
+
+scala> fold(List(1, 2, 3))
+res5: Int = 6
+
+scala> fold(Set(1, 2, 3))
+res6: Int = 6
+
+scala> fold(Vector(1, 2, 3))
+res7: Int = 6
+
+// Foldable lets us also map-and-combine in one step using a Monoid that should be available:
+
+scala> List(1, 2, 3).foldMap(_ + 1)
+res8: Int = 9
+
+// or calling the Foldable type class explicit
+scala> Foldable[List].foldMap(List(1, 2, 3))(_ + 1)
+res9: Int = 9
+```
+
+## Folding Monads
+
+
 ## Equal
 [scalaz.Equal](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Equal.scala): A type safe alternative to universal equality.
 
@@ -692,109 +1051,6 @@ res9: scalaz.Validation[scalaz.NonEmptyList[String],List[Int]] = Failure(NonEmpt
 ## Traverse
 [scalaz.Traverse](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Traverse.scala): Provides operations for traversing tructures
 
-## Semigroup
-[scalaz.Semigroup](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Semigroup.scala)
-
-A semigroup is a set of 'A' together with a binary operation `def append(left: A, right: A): A` with symbol `|+|`
-which combines elements from A. The `|+|` operator is required to be associative.
-
-A semigroup in type A must satisfy two laws:
-
-- __closure__: '∀ a, b in F, append(a, b)' is also in 'F'. This is enforced by the type system.
-- __associativity___: '∀ a, b, c` in F, the equation 'append(append(a, b), c) = append(a, append(b , c))' holds.
-
-For example, the natural numbers under addition form a semigroup: the sum of any two natural numbers is a natural number,
-and (a+b)+c = a+(b+c) for any natural numbers a, b, and c,.
-
-The integers under multiplication also form a semigroup, as do the integers, Boolean values under conjunction and disjunction,
-lists under concatenation, functions from a set to itself under composition.
-
-Semigroups show up all over the place, once you know to look for them.
-
-```scala
-import scalaz._
-import Scalaz._
-
-scala> Semigroup[Int].append(1, 1)
-res0: Int = 2
-
-scala> 1 |+| 1
-res1: Int = 2
-
-scala> Semigroup[String].append("a", "b")
-res2: String = ab
-
-scala> "a" |+| "b"
-res3: String = ab
-
-scala> 1 |+| "1"
-<console>:18: error: type mismatch;
- found   : String("1")
- required: Int
-       1 |+| "1"
-
-```
-
-We could add two `Person` types with a Semigroup:
-
-```scala
-import scalaz._
-import Scalaz._
-case class Person(name: String, age: Int)
-object Person {
-  implicit val semi = new Semigroup[Person] {
-    override def append(p1: Person, p2: => Person): Person =
-      Person(p1.name |+| p2.name, p1.age |+| p2.age)
-  }
-}
-
-scala> Person("a", 42) |+| Person("b", 42)
-res0: Person = Person(ab,84)
-```
-
-## Monoid
-[scalaz.Monoid](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Monoid.scala): An associative binary operation with an identity element ('zero')
-
-Many semigroups have a special element 'zero' for which the binary operation `def append(left: A, right: A): A` with symbol `|+|` is the identity.
-Such a _semigroup-with-identity-element_ is called a monoid.
-
-Monoid instances must satisfy the semigroup law and 2 additional laws:
-
-- __left identity__: 'forall a. append(zero, a) == a'
-- __right identity__: 'forall a. append(a, zero) == a'
-
-```scala
-import scalaz._
-import Scalaz._
-
-scala> Monoid[Int].append(1, 2)
-res0: Int = 3
-
-scala> Monoid[Int].multiply(20, 5)
-res1: Int = 100
-
-scala> Monoid[Int].isMZero(0)
-res2: Boolean = true
-
-scala> Monoid[Int].isMZero(1)
-res3: Boolean = false
-
-scala> Monoid[String].zero
-res4: String = ""
-
-scala> Monoid[Int].zero
-res5: Int = 0
-
-scala> Monoid[List[Int]].zero
-res6: List[Int] = List()
-
-scala> Monoid[Map[String, String]].zero
-res7: Map[String,String] = Map()
-
-scala> Monoid[String].multiply("a", 10)
-res8: String = aaaaaaaaaa
-```
-
 ## Apply
 [scalaz.Apply](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Apply.scala): provides the 'app' method. Accepts a Functor and and Applicative Functor.
 
@@ -899,11 +1155,11 @@ res12 Option[Int] = Some(2)
 - [(0'10 hr) Introduction to Scalaz and Typeclasses - Michele Sciabarra](https://www.youtube.com/watch?v=A63yuSWrxEY)
 - [(0'40 hr) From Simulacrum to Typeclassic - Michael Pilquist](https://www.youtube.com/watch?v=Crc2RHWrcLI)
 
-
 ## Resources
 - [Type Typeclassopedia - Slides](http://typeclassopedia.bitbucket.org/)
 - [The Type Astronaut's Guide to Shapeless - Underscore](https://github.com/underscoreio/shapeless-guide)
 - [learning Scalaz - Eugene Yokota](http://eed3si9n.com/learning-scalaz/7.0/)
+- [Learning Scalaz - Monoids - Eugene Yokota](http://eed3si9n.com/learning-scalaz/Monoid.html)
 - [Simulacrum - Michael Pilquist](https://github.com/mpilquist/simulacrum)
 - [The Neophyte's Guide to Scala Part 12: Type Classes - Daniel Westheide](http://danielwestheide.com/blog/2013/02/06/the-neophytes-guide-to-scala-part-12-type-classes.html)
 - [Demystifying Implicits and Typeclasses in Scala - Cake Solutions](http://www.cakesolutions.net/teamblogs/demystifying-implicits-and-typeclasses-in-scala)
@@ -911,6 +1167,11 @@ res12 Option[Int] = Some(2)
 - [The Haskell Typeclassopedia](https://wiki.haskell.org/Typeclassopedia)
 - [The Road to the Typeclassopedia - Channing Walton](http://channingwalton.github.io/typeclassopedia/)
 - [Effective Scala - Twitter](http://twitter.github.io/effectivescala/)
+
+## Books
+- [Functional programming in Scala - Rúnar Bjarnason](https://www.manning.com/books/functional-programming-in-scala)
+- [Scala Design Patterns - Ivan Nikolov](https://www.packtpub.com/application-development/scala-design-patterns)
+- [Learn you a Haskell for great good](http://learnyouahaskell.com/)
 
 ## Github
 - [My tinkering to understand the typeclassopedia - Channing Walton](https://github.com/channingwalton/typeclassopedia)

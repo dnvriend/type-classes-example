@@ -22,8 +22,9 @@ libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.10.0"
 
 // testing
 // https://github.com/typelevel/scalaz-scalatest
-libraryDependencies += "org.typelevel" %% "scalaz-scalatest" % "1.1.1" % Test
+libraryDependencies += "org.typelevel" %% "scalaz-scalatest" % "1.1.1"
 // https://github.com/scalatest/scalatest
+libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.4"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1"
 
 // testing configuration
@@ -63,6 +64,9 @@ initialize ~= { _ =>
 
 initialCommands in console := """
 import scalaz._, Scalaz._
+import org.scalacheck._
+import org.scalacheck.Prop.forAll
+val numbers = Gen.chooseNum(Long.MinValue, Long.MaxValue)
 import scala.concurrent._
 import scala.collection.immutable._
 import scala.reflect.runtime.universe._
