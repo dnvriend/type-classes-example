@@ -614,6 +614,15 @@ scala> 1 |+| "1"
 
 ```
 
+## Associative Functions
+Semigroups are associative functions:
+
+```
+f(a, f(b, c)) == f(f(a, b), c)
+```
+
+
+
 ## Monoid
 A Monoid is a pure algebraic structure that is defined by the monoid laws. Scalaz provides a type called [scalaz.Monoid](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Monoid.scala),
 which provides an associative binary operation with an identity element ('zero'). Scalaz not only provides the type class but also instances of Monoid for most
@@ -685,23 +694,46 @@ In practise it seems that both '* together with 1' ,'+ together with 0' and '++ 
 > The function takes two parameters. - The parameters and the returned value have the same type. - There exists such a value that doesn’t change other values when used with the binary function.
 
 ```scala
+// multiplication
 scala> 4 * 1
 res0: Int = 4
 
 scala> 1 * 9
 res1: Int = 9
 
+// list concatenation
 scala> List(1, 2, 3) ++ List()
 res2: List[Int] = List(1, 2, 3)
 
 scala> List() ++ List(1, 2, 3)
 res3: List[Int] = List(1, 2, 3)
 
+// addition
 scala> 0 + 1
 res4: Int = 1
 
 scala> 1 + 0
 res5: Int = 1
+
+// string concatenation
+scala> "" + "foo"
+res6: String = foo
+
+scala> "foo" + ""
+res7: String = foo
+
+// set with their union
+scala> Set(1, 2, 3) ++ Set(2,4)
+res8: scala.collection.immutable.Set[Int] = Set(1, 2, 3, 4)
+
+scala> true && true
+res9: Boolean = true
+
+scala> true && false
+res10: Boolean = false
+
+scala> false && true
+res11: Boolean = false
 ```
 
 > It doesn’t matter if we do (3 * 4) * 5 or 3 * (4 * 5). Either way, the result is 60. The same goes for ++.
@@ -833,6 +865,18 @@ In mathematics, the factorial of a non-negative integer n, denoted by n!, is the
 
 __Note__: 0! means an 'empty product' and is by convention always equal to '1', so '0! == 1'
 
+Some factorials:
+
+```
+0! = 1
+1! = 1
+2! = 2
+3! = 6
+4! = 24
+5! = 120
+6! = 720
+```
+
 We can calulate a factorial with our Multiplication Monoid when the contents of the collection contains all the elements of the factorial
 so (1, 2, 3, 4, 5) without duplications:
 
@@ -843,6 +887,42 @@ factorial: [A](xs: List[scalaz.@@[A,scalaz.Tags.Multiplication]])(implicit m: sc
 scala> factorial(List(1, 2, 3, 4, 5).map(Tags.Multiplication(_)))
 res1: scalaz.@@[Int,scalaz.Tags.Multiplication] = 120
 ```
+
+Calculating factorials can be done using recursion
+
+```scala
+def factorial(n: Int): Int =
+  if(n == 0) 1
+  else n * factorial(n - 1)
+
+scala> factorial(5)
+res0: Int = 120
+
+// we can also use pattern matching
+def factorial(n: Int): Int = n match {
+  case 0 => 1
+  case _ => n * factorial(n - 1)
+}
+
+scala> factorial(5)
+res1: Int = 120
+
+// factorial tail recursive
+
+def factorial(accumulator: Int, number: Int): Int = {
+  if(number == 1) accumulator
+  else factorial(number * accumulator, number - 1)
+}
+
+factorial(1, 5)
+
+// factorial using a fold
+scala> List(5, 4, 3, 2, 1).foldLeft(1)(_ * _)
+res1: Int = 120
+```
+
+## Monoids and fold
+Monoids assure that the collection we want to fold doesn't need to guarantee order.
 
 ## Monoids and foldable collections
 A Monoid can be used with the standard scala collections that support the `foldLeft` and `foldRight` functions for example
@@ -910,9 +990,6 @@ res8: Int = 9
 scala> Foldable[List].foldMap(List(1, 2, 3))(_ + 1)
 res9: Int = 9
 ```
-
-## Folding Monads
-
 
 ## Equal
 [scalaz.Equal](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Equal.scala): A type safe alternative to universal equality.
@@ -1154,6 +1231,8 @@ res12 Option[Int] = Some(2)
 - [(0'41 hr) Scala Typeclassopedia - John Kodumal](https://www.youtube.com/watch?v=IMGCDph1fNY)
 - [(0'10 hr) Introduction to Scalaz and Typeclasses - Michele Sciabarra](https://www.youtube.com/watch?v=A63yuSWrxEY)
 - [(0'40 hr) From Simulacrum to Typeclassic - Michael Pilquist](https://www.youtube.com/watch?v=Crc2RHWrcLI)
+- [(0'26 hr) Life After Monoids - Tom Switzer](https://www.youtube.com/watch?v=xO9AoZNSOH4)
+- [Don't fear the Monad - Brian Beckman](https://www.youtube.com/watch?v=ZhuHCtR3xq8)
 
 ## Resources
 - [Type Typeclassopedia - Slides](http://typeclassopedia.bitbucket.org/)
@@ -1167,6 +1246,12 @@ res12 Option[Int] = Some(2)
 - [The Haskell Typeclassopedia](https://wiki.haskell.org/Typeclassopedia)
 - [The Road to the Typeclassopedia - Channing Walton](http://channingwalton.github.io/typeclassopedia/)
 - [Effective Scala - Twitter](http://twitter.github.io/effectivescala/)
+- [Monoids Applied - Susan Potter](http://www.slideshare.net/mbbx6spp/functional-algebra-monoids-applied)
+- [Monoids for Programmers - A Scala Example - Vlad Patryshev](https://www.safaribooksonline.com/blog/2013/05/15/monoids-for-programmers-a-scala-example/)
+- [Aggregators: modeling data queries functionally - Oscar Boykin](https://speakerdeck.com/johnynek/aggregators-modeling-data-queries-functionally)
+- [Higher Order - Philosophy and functional programming](http://blog.higher-order.com/)
+- [Higher Order - Monoid Morphisms, Products, and Coproducts - ](http://blog.higher-order.com/blog/2014/03/19/monoid-morphisms-products-coproducts/)
+- [Of Algebirds, Monoids, Monads, and Other Bestiary for Large-Scale Data Analytics - Michael G. Noll](http://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics/)
 
 ## Books
 - [Functional programming in Scala - Rúnar Bjarnason](https://www.manning.com/books/functional-programming-in-scala)
