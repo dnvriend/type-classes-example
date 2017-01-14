@@ -1143,7 +1143,7 @@ res0: Option[Int] = Some(2)
 ```
 
 ## Functor
-[scalaz.Functor](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Functor.scala): provides a way to map over a value in a context
+[scalaz.Functor](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Functor.scala): provides a way to map over a value in a context.
 
 ```scala
 import scalaz._
@@ -1158,6 +1158,16 @@ res1: List[Int] = List(2, 3, 4)
 scala> Functor[NonEmptyList].map(NonEmptyList(1, 2, 3))(_ + 1)
 res2: scalaz.NonEmptyList[Int] = NonEmpty[2,3,4]
 ```
+
+__Digression:__
+A very interesting read about functors [The Many Functions of Functor - PinealServo](http://pinealservo.com/posts/2014-10-22-ManyFunctionsOfFunctor.html)
+that goes beyond the meaning of Functor in Category Theory and researches the word 'functor' in other contexts and provides some insight into
+the history of the word.
+
+__TL;DR:__
+The word has been coined by [Rudolf Carnap (1891—1970)](https://en.wikipedia.org/wiki/Rudolf_Carnap) a German-born philosopher that
+first used the word in the 1934 book [The Logical Syntax of Language](http://www.ams.org/journals/bull/1938-44-03/S0002-9904-1938-06694-3/S0002-9904-1938-06694-3.pdf).
+After being coined, the word has been reused in category theory by Saunders Mac Lane et al. in 1945, so thats ten years after Carnap coined the word.
 
 ## Applicative
 [scalaz.Applicative](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/Applicative.scala): an Applicative Functor.
@@ -1222,6 +1232,150 @@ res12 Option[Int] = Some(2)
 - [Catamorphism](https://wiki.haskell.org/Catamorphisms): Cata='downwards', Morphism='to shape': An [Catamorphisms](https://en.wikipedia.org/wiki/Catamorphism)
 - [Endomorphism](http://mathworld.wolfram.com/Endomorphism.html): Endon='inside', Morphism='to shape': An [Endomorphism](https://en.wikipedia.org/wiki/Endomorphism) of a group is a homomorphism from one object to itself.
 
+### Function
+A function is a structure that relates input to output. In the scala programming language, a function can be defined
+as something that can be evaluated on demand, so each and every time we want to compute a value, we can apply a
+function.
+
+In scala that is very easy to define:
+
+```scala
+scala> def addOne(x: Int): Int = x + 1
+addOne: (x: Int)Int
+
+scala> addOne(1)
+res0: Int = 2
+```
+
+We can use some syntactic sugar to transform a method to a function:
+
+```scala
+scala> val f = addOne _
+f: Int => Int = $$Lambda$1056/1003737182@6aba5d30
+
+scala> f(1)
+res1: Int = 2
+```
+
+Scala has very concise syntax for defining functions for example:
+
+```scala
+scala> val g = (_: Int) + 1
+g: Int => Int = $$Lambda$1059/1021656938@2d82408
+
+scala> g(1)
+res2: Int = 2
+```
+
+But at the other end of the spectrum, we can use the very verbose and
+technical way of defining a function:
+
+```scala
+scala> val h = new Function1[Int, Int] {
+     | override def apply(x: Int): Int = x + 1
+     | }
+h: Int => Int = <function1>
+
+scala> h(1)
+res3: Int = 2
+```
+
+__Technical side note:___
+As you can see, I am using the Scala 2.12 REPL. You can see that for all but the last example, Scala
+has optimized the function to be a Java8-lambda, which is a very resource optimized way for defining and
+executing Functions. When explicitly creating a function using the Function(N) trait, we are explicitly
+creating functions and those cannot be optimized to use lambdas.
+
+### Promoting methods to functions
+In the Scala programming language it is possible to _promote a method to a function_ by means of delegation which means
+a function is being created that will call our method. [Scala supports this using a process called 'method values'](http://scala-lang.org/files/archive/spec/2.12/06-expressions.html#method-values).
+Methods can be promoted to a function because a method basically does the same as a function in that it relates
+input to output and does this on demand. Of course, a plain method isn't a function, but Scala can promote a plain method
+to a function.
+
+But we need to define something extra here. Methods are often used in combination with objects to provide something called
+the 'universal access principle' and to provide encapsulation so it has everything to do with keeping state.
+So that is not the 'method-type' I am referring to; not a class method.
+
+Scala can provide methods in a static context, and those methods operate in a stateless context. When defining methods
+on a 'module', which is a way of strucuring/organizing code, you can group related methods (and values/constants), under a
+given name. Those methods can be 'converted' to a function for example:
+
+```scala
+scala> object Foo {
+     | val Pi: Double = 3.1415926
+     | def addOne(x: Int): Int = x + 1
+     | }
+defined object Foo
+
+scala> Foo.addOne _
+res0: Int => Int = $$Lambda$1331/111131743@5a8dfd2e
+```
+
+We have created a module (an organizational unit) called 'Foo' using the keyword 'object' that makes it possible to
+have a stable reference to the module 'Foo' that contains values and methods. Methods defined in such a module can
+be promoted to functions using a process called 'exa-expansion' and is described in the [Scala language specification - Method Values](http://scala-lang.org/files/archive/spec/2.12/06-expressions.html#method-values).
+
+So Scala provides several ways to create functions from 'eta-expanding' a method to a function literal.
+
+### Domain
+A [domain](http://www.mathsisfun.com/sets/domain-range-codomain.html) is all the values that __can go into__ a function.
+
+For example, when we have the function like the example above, the domain are all the values from Int.MinValue and Int.MaxValue
+inclusive. This range of values can best be expressed as [sets](http://www.mathsisfun.com/sets/sets-introduction.html),
+which is a unique collection of values.
+
+Sets can be written as:
+
+```
+{ ... , -3, -2, -1, 0, 1, 2, 3, ... }
+```
+
+Or in Scala:
+
+```
+scala> Set(-3, -2, -1, 0, 1, 2, 3)
+res0: scala.collection.immutable.Set[Int] = Set(0, -3, 1, 2, 3, -1, -2)
+```
+
+Even better is to use the [scala.collection.immutable.Range](http://www.scala-lang.org/api/2.12.1/scala/collection/immutable/Range$.html)
+to define a domain.
+
+```scala
+scala> Range.inclusive(-3, 3).toList
+res1: List[Int] = List(-3, -2, -1, 0, 1, 2, 3)
+```
+
+We can define a domain using `scala.collection.immutable.Range` and apply the function to the domain to get
+something that is called a `Range` in math terms, or in plain english, 'all the values that come out of a function
+when the function is applied on a certain domain'. We will use the `.map` method to apply the function to the domain:
+
+```scala
+scala> Range.inclusive(-3, 3).map(addOne)
+res2: scala.collection.immutable.IndexedSeq[Int] = Vector(-2, -1, 0, 1, 2, 3, 4)
+```
+
+To conclude the discussion, the co-domain is the range `Range.inclusive(Int.MinValue, Int.MaxValue)` so all the possible values
+that may come out of the function or in technical terms, the result type of the function which is `Int`.
+
+### Range
+A [Range](http://www.mathsisfun.com/sets/domain-range-codomain.html) is all the values that come out of a function when
+the function is applied on a certain domain.
+
+### Codomain
+A [codomain](http://www.mathsisfun.com/sets/domain-range-codomain.html) is all the values what __may possibly come out__ of a function.
+In Scala, the range is defined by the return type of a function/method
+
+### Drawing domain, range and codomain
+Domain, range and codomain are each defined as a Set eg. `{ ..., -3, -2, -1, 0, 1, 2, 3, ... }` and these sets can be drawn
+using an oval in where you draw the values that do into that set. The circle contains the name of the set.
+
+Between the sets there is an arrow representing a domain object that has been applied to the function and must point to
+the resuling range. The range is the output of the function and is another oval containing only the values that is the result
+of applying the function to the domain and is often called Y.
+
+For an explanation read: [Domain, Range and Codomain](http://www.mathsisfun.com/sets/domain-range-codomain.html)
+
 ## YouTube
 - [(0'29 hr) Typeclasses in Scala - Dan Rosen](https://www.youtube.com/watch?v=sVMES4RZF-8)
 - [(0'31 hr) Introduction to Scalaz - Heiko Seeberger](https://www.youtube.com/watch?v=HW8Cl5-pGlk)
@@ -1252,6 +1406,10 @@ res12 Option[Int] = Some(2)
 - [Higher Order - Philosophy and functional programming](http://blog.higher-order.com/)
 - [Higher Order - Monoid Morphisms, Products, and Coproducts - ](http://blog.higher-order.com/blog/2014/03/19/monoid-morphisms-products-coproducts/)
 - [Of Algebirds, Monoids, Monads, and Other Bestiary for Large-Scale Data Analytics - Michael G. Noll](http://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics/)
+- [How Much One Ought to Know Eta Expansion - Jacek Laskowski](http://blog.jaceklaskowski.pl/2013/11/23/how-much-one-ought-to-know-eta-expansion.html)
+- [Scala Language Specification - Method Values](http://scala-lang.org/files/archive/spec/2.12/06-expressions.html#method-values)
+- [Methods are not Functions - Rob Norris](http://tpolecat.github.io/2014/06/09/methods-functions.html)
+- [The Many Functions of Functor - PinealServo](http://pinealservo.com/posts/2014-10-22-ManyFunctionsOfFunctor.html)
 
 ## Books
 - [Functional programming in Scala - Rúnar Bjarnason](https://www.manning.com/books/functional-programming-in-scala)
