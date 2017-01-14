@@ -544,11 +544,11 @@ When no Monoid[ValidationNel[String, Int]] is found, then the whole program won'
 Scalaz does not only provide a bunch of type classes that are heavily inspired by the type classes as defined by the
 Haskell programming language, it also provides a lot of convenience methods that make working with type classes and
 combining these type classes with data structures very useful. The learning curve is knowing the which convenience
-methods there are, which type classes are there, and when it is logical to combine a type class with a convencience method
+methods there are, which type classes there are, and when it is logical to combine a type class with a convencience method
 and a data structure for solving a problem.
 
 Using type classes from standard libraries from for example Scalaz promotes standardization, developers start to recognize
-structures and over time makes (the learning curve) makes code very simple to read.
+structures and over time makes the code very simple to read and for the Java runtime very easy to optimize.
 
 Apart from the standardization and recognition, breaking down a problem is reusable parts like Semigroups, Monoids, Functors
 for example promotes reusable components because the type classes provide a very general abstraction because for most
