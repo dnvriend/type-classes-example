@@ -615,6 +615,29 @@ has optimized the function to be a Java8-lambda, which is a very resource optimi
 executing Functions. When explicitly creating a function using the Function(N) trait, we are explicitly
 creating functions and those cannot be optimized to use lambdas.
 
+### Combining functions
+Functions can be combined to create new functions using `compose` and `andThen` methods.
+
+```scala
+scala> val f = (_: Int) + 1
+f: Int => Int = $$Lambda$1020/536671860@442f92e6
+
+scala> val g = (_: Int) + 10
+g: Int => Int = $$Lambda$1029/1134894336@2e23c180
+
+scala> val h = f andThen g
+h: Int => Int = scala.Function1$$Lambda$1036/1906029492@52cb4f50
+
+scala> val i = f compose g
+i: Int => Int = scala.Function1$$Lambda$1037/676338251@5b051a5c
+
+scala> h(1)
+res0: Int = 12
+
+scala> i(1)
+res1: Int = 12
+```
+
 ### Promoting methods to functions
 In the Scala programming language it is possible to _promote a method to a function_ by means of delegation which means
 a function is being created that will call our method. [Scala supports this using a process called 'method values'](http://scala-lang.org/files/archive/spec/2.12/06-expressions.html#method-values).
@@ -756,6 +779,102 @@ scala> 1 |+| "1"
  required: Int
        1 |+| "1"
 
+```
+
+### Semigroup instances
+There are instances or Semigroup for:
+
+```
+scala> Semigroup[Short]
+res0: scalaz.Semigroup[Short] = scalaz.std.AnyValInstances$$anon$4@5f1ee303
+
+scala> Semigroup[Byte]
+res1: scalaz.Semigroup[Byte] = scalaz.std.AnyValInstances$$anon$2@5965e7d0
+
+scala> Semigroup[Int]
+res2: scalaz.Semigroup[Int] = scalaz.std.AnyValInstances$$anon$5@77f3b689
+
+scala> Semigroup[Long]
+res3: scalaz.Semigroup[Long] = scalaz.std.AnyValInstances$$anon$6@79decd60
+
+scala> Semigroup[BigDecimal]
+res4: scalaz.Semigroup[BigDecimal] = scalaz.std.math.BigDecimalInstances$$anon$1@141f0b78
+
+scala> Semigroup[String]
+res5: scalaz.Semigroup[String] = scalaz.std.StringInstances$stringInstance$@41b29a0f
+
+scala> Semigroup[List[Int]]
+res6: scalaz.Semigroup[List[Int]] = scalaz.std.ListInstances$$anon$4@3773a554
+
+scala> Semigroup[Set[Int]]
+res7: scalaz.Semigroup[scala.collection.immutable.Set[Int]] = scalaz.std.SetInstances$$anon$3@60a88f23
+
+scala> Semigroup[NonEmptyList[Int]]
+res8: scalaz.Semigroup[scalaz.NonEmptyList[Int]] = scalaz.NonEmptyListInstances$$anon$2@38d65d41
+
+scala> Semigroup[Vector[Int]]
+res9: scalaz.Semigroup[scala.collection.immutable.Vector[Int]] = scalaz.std.VectorInstances$$anon$4@54e3c254
+
+scala> Semigroup[Map[String, String]]
+res10: scalaz.Semigroup[scala.collection.immutable.Map[String,String]] = scalaz.std.MapSubInstances$$anon$5@3f4bf1ca
+
+scala> Semigroup[Map[String, List[Int]]]
+res11: scalaz.Semigroup[scala.collection.immutable.Map[String,List[Int]]] = scalaz.std.MapSubInstances$$anon$5@29c645f6
+
+scala> Semigroup[Disjunction[String, Int]]
+res12: scalaz.Semigroup[scalaz.Disjunction[String,Int]] = scalaz.DisjunctionInstances$$anon$4@1747f915
+
+scala> Semigroup[Validation[String, Int]]
+res13: scalaz.Semigroup[scalaz.Validation[String,Int]] = scalaz.ValidationInstances0$$anon$5@65d1c6cc
+
+scala> Semigroup[ValidationNel[String, Int]]
+res14: scalaz.Semigroup[scalaz.ValidationNel[String,Int]] = scalaz.ValidationInstances0$$anon$5@49f5361d
+
+scala> Semigroup[Option[Int]]
+res15: scalaz.Semigroup[Option[Int]] = scalaz.std.OptionInstances$$anon$8@66c75201
+
+scala> Semigroup[Future[Int]]
+res16: scalaz.Semigroup[scala.concurrent.Future[Int]] = scalaz.Monoid$$anon$2@25efa795
+
+scala> Semigroup[Int => Int]
+res17: scalaz.Semigroup[Int => Int] = scalaz.std.FunctionInstances0$$anon$14@50ca7072
+```
+
+We could for example append two functions and apply the semigroup:
+
+```scala
+scala> val f = (_: Int) + 1
+f: Int => Int = $$Lambda$1252/1700135698@120dc79c
+
+scala> val g = (_: Int) + 10
+g: Int => Int = $$Lambda$1253/1532807735@1a8e7046
+
+scala> val s = f |+| g
+s: Int => Int = scalaz.std.Function1Semigroup$$Lambda$1268/1970485818@3dee6728
+
+scala> s(1)
+res0: Int = 13
+
+scala> val t = s |+| s
+t: Int => Int = scalaz.std.Function1Semigroup$$Lambda$1268/1970485818@7724ed3c
+
+scala> t(1)
+res1: Int = 26
+
+scala> val xs = List.fill(5)(s)
+xs: List[Int => Int] = List(scalaz.std.Function1Semigroup$$Lambda$1268/1970485818@3dee6728, scalaz.std.Function1Semigroup$$Lambda$1268/1970485818@3dee6728, scalaz.std.Function1Semigroup$$Lambda$1268/1970485818@3dee6728, scalaz.std.Function1Semigroup$$Lambda$1268/1970485818@3dee6728, scalaz.std.Function1Semigroup$$Lambda$1268/1970485818@3dee6728)
+
+// is there a Monoid[Int => Int]?
+scala> Monoid[List[Int => Int]]
+res2: scalaz.Monoid[List[Int => Int]] = scalaz.std.ListInstances$$anon$4@2efc84ef
+
+// so there is a Monoid for the element. We can now fold the List structure:
+scala> val j = Foldable[List].fold(xs)
+j: Int => Int = scalaz.std.Function1Semigroup$$Lambda$1268/1970485818@1d0b9fde
+
+// we can now apply the resulting folded 'j' structure
+scala> j(1)
+res3: Int = 65
 ```
 
 ## Associative Functions
@@ -1468,6 +1587,9 @@ The Reader monad can be used to easily pass configuration (or other values) arou
 ## Writer Monad
 Keep track of a sort of logging during a set of operations
 
+## Monad Transformers
+...
+
 ## Terms
 - Auto (Greek): means 'self'
 - Iso (Greek): means 'equal'
@@ -1502,7 +1624,7 @@ Keep track of a sort of logging during a set of operations
 - [(0'32 hr) The Reader Monad for Depencency Injection - Jason Arhart](https://www.youtube.com/watch?v=xPlsVVaMoB0)
 - [(0'27 hr) Reader Monad & Free Monad - Rúnar Bjarnason](https://www.youtube.com/watch?v=ZasXwtTRkio)
 - [(0'31 hr) Property Based Testing - Amanda Laucher](https://www.youtube.com/watch?v=uF_m6lCQTIs)
-
+- [(0'44 hr) Options in Futures, how to unsuck them - Erik Bakker](https://www.youtube.com/watch?v=hGMndafDcc8)
 
 ## Resources
 - [Type Typeclassopedia - Slides](http://typeclassopedia.bitbucket.org/)
