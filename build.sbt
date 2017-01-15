@@ -8,7 +8,10 @@ scalaVersion := "2.12.1"
 
 // functional and typelevel programming
 // https://github.com/scalaz/scalaz
-libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.8"
+val scalazVersion = "7.2.8"
+libraryDependencies += "org.scalaz" %% "scalaz-core" % scalazVersion
+libraryDependencies += "org.scalaz" %% "scalaz-effect" % scalazVersion
+libraryDependencies += "org.scalaz" %% "scalaz-concurrent" % scalazVersion
 
 /////////////////
 // JSON libraries

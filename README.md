@@ -1360,6 +1360,13 @@ scala> for {
 res12 Option[Int] = Some(2)
 ```
 
+__Digression:__
+- [Monad](https://en.wikipedia.org/wiki/Monad_(philosophy)) (from Greek 'Monas'): means 'unit' or 'alone'
+refers in creation theory to the first being, divinity, or the totality of all beings.
+The concept was reportedly conceived by the Pythagoreans and may refer variously to a single source acting alone
+and/or an indivisible origin. The concept was later adopted by other philosophers, such as
+[Leibniz](https://en.wikipedia.org/wiki/Gottfried_Wilhelm_Leibniz).
+
 ## Terms
 - Auto (Greek): means 'self'
 - Iso (Greek): means 'equal'
@@ -1368,6 +1375,7 @@ res12 Option[Int] = Some(2)
 - Morph (Greek): means 'form' or 'shape'
 - Morphism (Greek): 'to form' or 'to shape'
 - Cata (Greek): means 'downwards' or 'according to'
+- Monad (from Greek 'Monas'): means 'unit' or 'alone' refers to the first being, divinity or the totality of all beings
 - [Isomorphism](http://mathworld.wolfram.com/Isomorphism.html): Iso='equal' and Morphism='to shape': An [Isomorphism](https://en.wikipedia.org/wiki/Isomorphism)
 - [Automorphism](http://mathworld.wolfram.com/Automorphism.html): Auto='self', Morphism='to shape': An [Automorphism](https://en.wikipedia.org/wiki/Automorphism)
 - [Homomorphism](http://mathworld.wolfram.com/Homomorphism.html): Homos='same', Morphism='to shape': [Homomorphism](https://en.wikipedia.org/wiki/Homomorphism)
@@ -1375,6 +1383,8 @@ res12 Option[Int] = Some(2)
 - [Endomorphism](http://mathworld.wolfram.com/Endomorphism.html): Endon='inside', Morphism='to shape': An [Endomorphism](https://en.wikipedia.org/wiki/Endomorphism) of a group is a homomorphism from one object to itself.
 
 ## YouTube
+- [(0'05 hr) Is Math Discovered or Invented - Jeff Dekofsky](https://www.youtube.com/watch?v=X_xR5Kes4Rs)
+- [(0'34 hr) (for laughs and learning!) Functional Programming is Terrible - Rúnar Bjarnason](https://www.youtube.com/watch?v=hzf3hTUKk8U)
 - [(0'29 hr) Typeclasses in Scala - Dan Rosen](https://www.youtube.com/watch?v=sVMES4RZF-8)
 - [(0'31 hr) Introduction to Scalaz - Heiko Seeberger](https://www.youtube.com/watch?v=HW8Cl5-pGlk)
 - [(0'29 hr) Learning Scalaz - Eugene Yokota](https://www.youtube.com/watch?v=jyMIvcUxOJ0)
@@ -1384,7 +1394,14 @@ res12 Option[Int] = Some(2)
 - [(0'10 hr) Introduction to Scalaz and Typeclasses - Michele Sciabarra](https://www.youtube.com/watch?v=A63yuSWrxEY)
 - [(0'40 hr) From Simulacrum to Typeclassic - Michael Pilquist](https://www.youtube.com/watch?v=Crc2RHWrcLI)
 - [(0'26 hr) Life After Monoids - Tom Switzer](https://www.youtube.com/watch?v=xO9AoZNSOH4)
-- [Don't fear the Monad - Brian Beckman](https://www.youtube.com/watch?v=ZhuHCtR3xq8)
+- [(0'41 hr) Monads - Katie Miller](https://www.youtube.com/watch?v=MlZCiiKGbb0)
+- [(1'07 hr) Don't fear the Monad - Brian Beckman](https://www.youtube.com/watch?v=ZhuHCtR3xq8)
+- [(2'03 hr) Scalaz State Monad - Michael Pilquist](https://www.youtube.com/watch?v=Jg3Uv_YWJqI)
+- [(1'06 hr) The Zen of Stateless State - The State Monad - Brian Beckman](https://www.youtube.com/watch?v=XxzzJiXHOJs)
+- [(0'32 hr) The Reader Monad for Depencency Injection - Jason Arhart](https://www.youtube.com/watch?v=xPlsVVaMoB0)
+- [(0'27 hr) Reader Monad & Free Monad - Rúnar Bjarnason](https://www.youtube.com/watch?v=ZasXwtTRkio)
+- [(0'31 hr) Property Based Testing - Amanda Laucher](https://www.youtube.com/watch?v=uF_m6lCQTIs)
+
 
 ## Resources
 - [Type Typeclassopedia - Slides](http://typeclassopedia.bitbucket.org/)
