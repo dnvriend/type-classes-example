@@ -1368,7 +1368,7 @@ and/or an indivisible origin. The concept was later adopted by other philosopher
 [Leibniz](https://en.wikipedia.org/wiki/Gottfried_Wilhelm_Leibniz).
 
 ## State Monad
-The [scalaz.State](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/State.scala) Monad provides 
+The [scalaz.State](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/State.scala) Monad provides
 a convient way to handle state that needs to be passed through a set of functions.
 You might need to keep track of results, need to pass some context around a set of functions, or require
 some (im)mutable context for another reason.
@@ -1379,43 +1379,52 @@ some (im)mutable context for another reason.
 import scalaz._
 import Scalaz._
 
-def addToList(x: Int): State[List[Int], Unit] =
-  State[List[Int], Unit](xs => (x :: xs, ()))
+scala> def addToList(x: Int): State[List[Int], Unit] =
+     |   State[List[Int], Unit](xs => (x :: xs, ()))
+addToList: (x: Int)scalaz.State[List[Int],Unit]
 
-//
-def listMutationComposition: State[List[Int], Unit] = for {
-  _ <- addToList(1)
-  _ <- addToList(2)
-  _ <- addToList(3)
-  r <- addToList(4)
-} yield r
+scala> def listMutationComposition: State[List[Int], Unit] = for {
+     |   _ <- addToList(1)
+     |   _ <- addToList(2)
+     |   _ <- addToList(3)
+     |   r <- addToList(4)
+     | } yield r
+listMutationComposition: scalaz.State[List[Int],Unit]
 
-val result: (List[Int], _) =
-  listMutationComposition.run(List())
+scala> val result: (List[Int], _) =
+     |   listMutationComposition.run(List())
+result: Tuple2[List[Int], _] = (List(4, 3, 2, 1),())
+
 ```
 
 ### Manipulating a case class
 
 ```scala
+import scalaz._
+import Scalaz._
+
 trait Event
 case class NameAltered(name: String) extends Event
 case class AgeAltered(age: Int) extends Event
 
 case class Person(name: String, age: Int)
 
-def handleEvent(e: Event): State[Person, Unit] = State { person =>
-    e match {
-      case NameAltered(name) => (person.copy(name = name), ())
-      case AgeAltered(age) => (person.copy(age = age), ())
-    }
-}
+scala> def handleEvent(e: Event): State[Person, Unit] = State { person =>
+     |     e match {
+     |       case NameAltered(name) => (person.copy(name = name), ())
+     |       case AgeAltered(age) => (person.copy(age = age), ())
+     |     }
+     | }
+handleEvent: (e: Event)scalaz.State[Person,Unit]
 
-def manipPerson: State[Person, Unit] = for {
-  _ <- handleEvent(NameAltered("Dennis"))
-  _ <- handleEvent(AgeAltered(42))
-} yield ()
+scala> def manipPerson: State[Person, Unit] = for {
+     |   _ <- handleEvent(NameAltered("Dennis"))
+     |   _ <- handleEvent(AgeAltered(42))
+     | } yield ()
+manipPerson: scalaz.State[Person,Unit]
 
-manipPerson(Person("", 0))
+scala> manipPerson(Person("", 0))
+res0: scalaz.Id.Id[(Person, Unit)] = (Person(Dennis,42),())
 ```
 
 ### Processing an event log using State Monad
@@ -1449,7 +1458,8 @@ val xs: List[Event] =
     AgeAltered(44)
   )
 
-val (person, _) = xs.traverseS(handleEvent).run(none[Person])
+scala> val (person, _) = xs.traverseS(handleEvent).run(none[Person])
+person: Option[Person] = Some(Person(Bar,44))
 ```
 
 ## Reader Monad
