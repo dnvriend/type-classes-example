@@ -1367,6 +1367,97 @@ The concept was reportedly conceived by the Pythagoreans and may refer variously
 and/or an indivisible origin. The concept was later adopted by other philosophers, such as
 [Leibniz](https://en.wikipedia.org/wiki/Gottfried_Wilhelm_Leibniz).
 
+## State Monad
+The [scalaz.State](https://github.com/scalaz/scalaz/blob/v7.2.8/core/src/main/scala/scalaz/State.scala) Monad provides 
+a convient way to handle state that needs to be passed through a set of functions.
+You might need to keep track of results, need to pass some context around a set of functions, or require
+some (im)mutable context for another reason.
+
+### Manipulating a list
+
+```scala
+import scalaz._
+import Scalaz._
+
+def addToList(x: Int): State[List[Int], Unit] =
+  State[List[Int], Unit](xs => (x :: xs, ()))
+
+//
+def listMutationComposition: State[List[Int], Unit] = for {
+  _ <- addToList(1)
+  _ <- addToList(2)
+  _ <- addToList(3)
+  r <- addToList(4)
+} yield r
+
+val result: (List[Int], _) =
+  listMutationComposition.run(List())
+```
+
+### Manipulating a case class
+
+```scala
+trait Event
+case class NameAltered(name: String) extends Event
+case class AgeAltered(age: Int) extends Event
+
+case class Person(name: String, age: Int)
+
+def handleEvent(e: Event): State[Person, Unit] = State { person =>
+    e match {
+      case NameAltered(name) => (person.copy(name = name), ())
+      case AgeAltered(age) => (person.copy(age = age), ())
+    }
+}
+
+def manipPerson: State[Person, Unit] = for {
+  _ <- handleEvent(NameAltered("Dennis"))
+  _ <- handleEvent(AgeAltered(42))
+} yield ()
+
+manipPerson(Person("", 0))
+```
+
+### Processing an event log using State Monad
+
+```scala
+import scalaz._
+import Scalaz._
+
+trait Event
+case class PersonCreated(name: String, age: Int) extends Event
+case class NameAltered(name: String) extends Event
+case class AgeAltered(age: Int) extends Event
+
+case class Person(name: String, age: Int)
+
+def handleEvent(e: Event): State[Option[Person], Unit] = State {
+  case maybePerson => e match {
+    case PersonCreated(name, age) => (Option(Person(name, age)), ())
+    case NameAltered(name) => (maybePerson.map(_.copy(name = name)), ())
+    case AgeAltered(age) => (maybePerson.map(_.copy(age = age)), ())
+  }
+}
+
+val xs: List[Event] =
+  List(
+    PersonCreated("Dennis", 42),
+    NameAltered("Foo"),
+    AgeAltered(42),
+    AgeAltered(43),
+    NameAltered("Bar"),
+    AgeAltered(44)
+  )
+
+val (person, _) = xs.traverseS(handleEvent).run(none[Person])
+```
+
+## Reader Monad
+The Reader monad can be used to easily pass configuration (or other values) around, and can be used for stuff like dependency injection.
+
+## Writer Monad
+Keep track of a sort of logging during a set of operations
+
 ## Terms
 - Auto (Greek): means 'self'
 - Iso (Greek): means 'equal'
@@ -1425,6 +1516,9 @@ and/or an indivisible origin. The concept was later adopted by other philosopher
 - [Scala Language Specification - Method Values](http://scala-lang.org/files/archive/spec/2.12/06-expressions.html#method-values)
 - [Methods are not Functions - Rob Norris](http://tpolecat.github.io/2014/06/09/methods-functions.html)
 - [The Many Functions of Functor - PinealServo](http://pinealservo.com/posts/2014-10-22-ManyFunctionsOfFunctor.html)
+- [Scalaz features for everyday usage part 1: Typeclasses and Scala extensions - Jos Dirksen](http://www.smartjava.org/content/scalaz-features-everyday-usage-part-1-typeclasses-and-scala-extensions)
+- [Scalaz features for everyday usage part 2: Monad Transformers and the Reader Monad - Jos Dirksen](http://www.smartjava.org/content/scalaz-features-everyday-usage-part-2-monad-transformers-and-reader-monad)
+- [Scalaz features for everyday usage part 3: State Monad, Writer Monad and lenses - Jos Dirksen](http://www.smartjava.org/content/scalaz-features-everyday-usage-part-3-state-monad-writer-monad-and-lenses)
 
 ## Books
 - [Functional programming in Scala - Rúnar Bjarnason](https://www.manning.com/books/functional-programming-in-scala)
