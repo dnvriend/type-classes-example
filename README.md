@@ -1618,6 +1618,8 @@ Keep track of a sort of logging during a set of operations
 - [(0'40 hr) From Simulacrum to Typeclassic - Michael Pilquist](https://www.youtube.com/watch?v=Crc2RHWrcLI)
 - [(0'26 hr) Life After Monoids - Tom Switzer](https://www.youtube.com/watch?v=xO9AoZNSOH4)
 - [(0'41 hr) Monads - Katie Miller](https://www.youtube.com/watch?v=MlZCiiKGbb0)
+- [(0'38 hr) Monads Made Semi-Understandable - Libby Kent](https://www.youtube.com/watch?v=J3Djb1VyzkM)
+- [(0'21 hr) Monads Asking the Right Question - Pawel Szulc](https://www.youtube.com/watch?v=FvZ_QhcbTCc)
 - [(1'07 hr) Don't fear the Monad - Brian Beckman](https://www.youtube.com/watch?v=ZhuHCtR3xq8)
 - [(2'03 hr) Scalaz State Monad - Michael Pilquist](https://www.youtube.com/watch?v=Jg3Uv_YWJqI)
 - [(1'06 hr) The Zen of Stateless State - The State Monad - Brian Beckman](https://www.youtube.com/watch?v=XxzzJiXHOJs)
@@ -1625,6 +1627,7 @@ Keep track of a sort of logging during a set of operations
 - [(0'27 hr) Reader Monad & Free Monad - Rúnar Bjarnason](https://www.youtube.com/watch?v=ZasXwtTRkio)
 - [(0'31 hr) Property Based Testing - Amanda Laucher](https://www.youtube.com/watch?v=uF_m6lCQTIs)
 - [(0'44 hr) Options in Futures, how to unsuck them - Erik Bakker](https://www.youtube.com/watch?v=hGMndafDcc8)
+- [(0'30 hr) Programs as Values Pure Composable Database Access in Scala (Doobie/Free Monads/Free Functors) - Rob Norris](https://www.youtube.com/watch?v=XHiTK4UOIf0)
 
 ## Resources
 - [Type Typeclassopedia - Slides](http://typeclassopedia.bitbucket.org/)
@@ -1651,11 +1654,19 @@ Keep track of a sort of logging during a set of operations
 - [Scalaz features for everyday usage part 1: Typeclasses and Scala extensions - Jos Dirksen](http://www.smartjava.org/content/scalaz-features-everyday-usage-part-1-typeclasses-and-scala-extensions)
 - [Scalaz features for everyday usage part 2: Monad Transformers and the Reader Monad - Jos Dirksen](http://www.smartjava.org/content/scalaz-features-everyday-usage-part-2-monad-transformers-and-reader-monad)
 - [Scalaz features for everyday usage part 3: State Monad, Writer Monad and lenses - Jos Dirksen](http://www.smartjava.org/content/scalaz-features-everyday-usage-part-3-state-monad-writer-monad-and-lenses)
+- [Type Level Programming - ](http://gigiigig.github.io/tlp-step-by-step/introduction.html)
 
 ## Books
 - [Functional programming in Scala - Rúnar Bjarnason](https://www.manning.com/books/functional-programming-in-scala)
 - [Scala Design Patterns - Ivan Nikolov](https://www.packtpub.com/application-development/scala-design-patterns)
 - [Learn you a Haskell for great good](http://learnyouahaskell.com/)
+
+## Other FP Libraries
+- [Scala Hamsters - A mini Scala library for functional programming](https://github.com/scala-hamsters/hamsters)
+- [Structures - Functional type classes for Scala](https://github.com/mpilquist/Structures)
+- [TypeLevel - Cats - A Scala library for functional programming](http://typelevel.org/cats/)
+- [Scalaz - A Scala library for functional programming](https://github.com/scalaz/scalaz)
+- [Algebird - Abstract Algebra for Scala](https://github.com/twitter/algebird)
 
 ## Github
 - [My tinkering to understand the typeclassopedia - Channing Walton](https://github.com/channingwalton/typeclassopedia)
