@@ -1,88 +1,53 @@
+
+trait Command
+case class CreatePerson(id: Long, name: String, age: Int) extends Command
+case class ChangeName(id: Long, name: String) extends Command
+case class ChangeAge(id: Long, age: Int) extends Command
+case class DeletePerson(id: Long) extends Command
+
+trait Event
+case class PersonCreated(id: Long, name: String, age: Int) extends Event
+case class NameChanged(id: Long, oldName: String, newName: String) extends Event
+case class AgeChanged(id: Long, oldAge: Int, newAge: Int) extends Event
+case class PersonDeleted(id: Long) extends Event
+
+case class Person(id: Long, name: String, age: Int, deleted: Boolean)
+
 import scalaz._
 import Scalaz._
 
-def addToList(x: Int): State[List[Int], Unit] =
-  State[List[Int], Unit](xs => (x :: xs, ()))
-
-//
-def listMutationComposition: State[List[Int], Unit] = for {
-  _ <- addToList(1)
-  _ <- addToList(2)
-  _ <- addToList(3)
-  r <- addToList(4)
-} yield r
-
-val result: (List[Int], _) =
-  listMutationComposition.run(List())
-
-trait Event
-case class NameAltered(name: String) extends Event
-case class AgeAltered(age: Int) extends Event
-
-case class Person(name: String, age: Int)
-
-def handleEvent(e: Event): State[Person, Unit] = State { person =>
-    e match {
-      case NameAltered(name) => (person.copy(name = name), ())
-      case AgeAltered(age) => (person.copy(age = age), ())
-    }
+def handleEvent(event: Event): State[Option[Person], Unit] = State { maybePerson =>
+  event match {
+    case PersonCreated(id, name, age) => (Option(Person(id, name, age, deleted = false)), ())
+    case NameChanged(id, _, newName) => (maybePerson.map(_.copy(name = newName)), ())
+    case AgeChanged(id, _, newAge) => (maybePerson.map(_.copy(age = newAge)), ())
+    case PersonDeleted(id) => (maybePerson.map(_.copy(deleted = true)), ())
+  }
 }
 
-def manipPerson: State[Person, Unit] = for {
-  _ <- handleEvent(NameAltered("Dennis"))
-  _ <- handleEvent(AgeAltered(42))
-} yield ()
+def handleCommand(command: Command): State[Option[Person], Event] = State { maybePerson =>
+  command match {
+    case CreatePerson(id, name, age) => (Option(Person(id, name, age, deleted = false)), PersonCreated(id, name, age))
+    case ChangeName(id, name) => (maybePerson.map(_.copy(name = name)), NameChanged(id, maybePerson.map(_.name).getOrElse(""), name))
+    case ChangeAge(id, age) => (maybePerson.map(_.copy(age = age)), AgeChanged(id, maybePerson.map(_.age).getOrElse(0), age))
+    case DeletePerson(id) => (maybePerson.map(_.copy(deleted = true)), PersonDeleted(id))
+  }
+}
 
-manipPerson(Person("", 0))
+val eventLog: List[Event] = List(
+  PersonCreated(1, "John Doe", 42),
+  NameChanged(1, "John Doe", "Jane Doe"),
+  AgeChanged(1, 42, 22),
+  PersonDeleted(1)
+)
 
+val (personState, _) = eventLog.traverseS(handleEvent).run(Option.empty[Person])
 
+val commandLog: List[Command] = List(
+  CreatePerson(1, "John Doe", 42),
+  ChangeName(1, "Jane Doe"),
+  ChangeAge(1, 22),
+  DeletePerson(1)
+)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//import scalaz._
-//import Scalaz._
-//
-//trait Event
-//case class PersonCreated(name: String, age: Int) extends Event
-//case class NameAltered(name: String) extends Event
-//case class AgeAltered(age: Int) extends Event
-//
-//case class Person(name: String, age: Int)
-//
-//def handleEvent(e: Event): State[Option[Person], Unit] = State {
-//  case maybePerson => e match {
-//    case PersonCreated(name, age) => (Option(Person(name, age)), ())
-//    case NameAltered(name) => (maybePerson.map(_.copy(name = name)), ())
-//    case AgeAltered(age) => (maybePerson.map(_.copy(age = age)), ())
-//  }
-//}
-//
-//val xs: List[Event] =
-//  List(
-//    PersonCreated("Dennis", 42),
-//    NameAltered("Foo"),
-//    AgeAltered(42),
-//    AgeAltered(43),
-//    NameAltered("Bar"),
-//    AgeAltered(44)
-//  )
-//
-//val (person, _) = xs.traverseS(handleEvent).run(none[Person])
-//
+val (otherPersonState, events) = commandLog.traverseS(handleCommand).run(Option.empty[Person])

@@ -1590,6 +1590,10 @@ Keep track of a sort of logging during a set of operations
 ## Monad Transformers
 ...
 
+## Cake Pattern
+...
+
+
 ## Terms
 - Auto (Greek): means 'self'
 - Iso (Greek): means 'equal'
@@ -1599,6 +1603,10 @@ Keep track of a sort of logging during a set of operations
 - Morphism (Greek): 'to form' or 'to shape'
 - Cata (Greek): means 'downwards' or 'according to'
 - Monad (from Greek 'Monas'): means 'unit' or 'alone' refers to the first being, divinity or the totality of all beings
+- [Algebra](http://www.und.edu/instruct/lgeller/algebra.html) from the Arabic word al-jabr from the book 'Hidab al-jabr wal-muqubala' by ' Mohammed ibn-Musa al-Khowarizmi' is a way of solving equations.
+- Algebraic: means 'only defined by its algebra' so the operations 'that something' supports and the laws of these operations,
+- An algebraic structure: an algebraic structure that something that is defined only by its algebra, so the operations it supports and the layws of these operations
+- Monoid: an algebraic structure that conforms to the monoid laws
 - [Isomorphism](http://mathworld.wolfram.com/Isomorphism.html): Iso='equal' and Morphism='to shape': An [Isomorphism](https://en.wikipedia.org/wiki/Isomorphism)
 - [Automorphism](http://mathworld.wolfram.com/Automorphism.html): Auto='self', Morphism='to shape': An [Automorphism](https://en.wikipedia.org/wiki/Automorphism)
 - [Homomorphism](http://mathworld.wolfram.com/Homomorphism.html): Homos='same', Morphism='to shape': [Homomorphism](https://en.wikipedia.org/wiki/Homomorphism)
@@ -1622,9 +1630,13 @@ Keep track of a sort of logging during a set of operations
 - [(0'21 hr) Monads Asking the Right Question - Pawel Szulc](https://www.youtube.com/watch?v=FvZ_QhcbTCc)
 - [(1'07 hr) Don't fear the Monad - Brian Beckman](https://www.youtube.com/watch?v=ZhuHCtR3xq8)
 - [(2'03 hr) Scalaz State Monad - Michael Pilquist](https://www.youtube.com/watch?v=Jg3Uv_YWJqI)
+- [(0'30 hr) Scalaz 7 - Lars Hupel](https://www.youtube.com/watch?v=KzoqOVD7mvE&t=1590s)
 - [(1'06 hr) The Zen of Stateless State - The State Monad - Brian Beckman](https://www.youtube.com/watch?v=XxzzJiXHOJs)
 - [(0'32 hr) The Reader Monad for Depencency Injection - Jason Arhart](https://www.youtube.com/watch?v=xPlsVVaMoB0)
 - [(0'27 hr) Reader Monad & Free Monad - Rúnar Bjarnason](https://www.youtube.com/watch?v=ZasXwtTRkio)
+- [(0'51 hr) Constraints Liberate, Liberties Constrain — Runar Bjarnason](https://www.youtube.com/watch?v=GqmsQeSzMdw)
+- [(0'45 hr) Composable application architecture with reasonably priced monads - Runar Bjarnason](https://www.youtube.com/watch?v=M258zVn4m2M)
+- [(0'34 hr) Functional Programming is Terrible - Runar Bjarnason](https://www.youtube.com/watch?v=hzf3hTUKk8U)
 - [(0'31 hr) Property Based Testing - Amanda Laucher](https://www.youtube.com/watch?v=uF_m6lCQTIs)
 - [(0'44 hr) Options in Futures, how to unsuck them - Erik Bakker](https://www.youtube.com/watch?v=hGMndafDcc8)
 - [(0'30 hr) Programs as Values Pure Composable Database Access in Scala (Doobie/Free Monads/Free Functors) - Rob Norris](https://www.youtube.com/watch?v=XHiTK4UOIf0)
@@ -1655,6 +1667,8 @@ Keep track of a sort of logging during a set of operations
 - [Scalaz features for everyday usage part 2: Monad Transformers and the Reader Monad - Jos Dirksen](http://www.smartjava.org/content/scalaz-features-everyday-usage-part-2-monad-transformers-and-reader-monad)
 - [Scalaz features for everyday usage part 3: State Monad, Writer Monad and lenses - Jos Dirksen](http://www.smartjava.org/content/scalaz-features-everyday-usage-part-3-state-monad-writer-monad-and-lenses)
 - [Type Level Programming - ](http://gigiigig.github.io/tlp-step-by-step/introduction.html)
+- [Cake Pattern in Depth - Mark Harrison](http://www.cakesolutions.net/teamblogs/2011/12/19/cake-pattern-in-depth)
+- [Scrap Your Cake Pattern Boilerplate: Dependency Injection Using the Reader Monad - Jason Arhart](http://blog.originate.com/blog/2013/10/21/reader-monad-for-dependency-injection/)
 
 ## Books
 - [Functional programming in Scala - Rúnar Bjarnason](https://www.manning.com/books/functional-programming-in-scala)
