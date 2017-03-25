@@ -1660,6 +1660,10 @@ pulling apart a stack to access the wrapped monads.
 ## YouTube
 - [(0'05 hr) Is Math Discovered or Invented - Jeff Dekofsky](https://www.youtube.com/watch?v=X_xR5Kes4Rs)
 - [(0'34 hr) (for laughs and learning!) Functional Programming is Terrible - Rúnar Bjarnason](https://www.youtube.com/watch?v=hzf3hTUKk8U)
+- [(0'25 hr) Scala Lecture 1: Polymorphism](https://www.youtube.com/watch?v=Ug-x09EBGk0)
+- [(0'29 hr) Scala Lecture 2: Higher Kinded Types](https://www.youtube.com/watch?v=dxBs_CdEC98)
+- [(0'38 hr) Scala Lecture 3: Monads](https://www.youtube.com/watch?v=DGBeQ8iOHME)
+- [(0'25 hr) Scala Lecture 4: Either, Xor and Validated](https://www.youtube.com/watch?v=Tc8_41fXW1s)
 - [(0'29 hr) Typeclasses in Scala - Dan Rosen](https://www.youtube.com/watch?v=sVMES4RZF-8)
 - [(0'31 hr) Introduction to Scalaz - Heiko Seeberger](https://www.youtube.com/watch?v=HW8Cl5-pGlk)
 - [(0'29 hr) Learning Scalaz - Eugene Yokota](https://www.youtube.com/watch?v=jyMIvcUxOJ0)
@@ -1685,6 +1689,9 @@ pulling apart a stack to access the wrapped monads.
 - [(0'31 hr) Property Based Testing - Amanda Laucher](https://www.youtube.com/watch?v=uF_m6lCQTIs)
 - [(0'44 hr) Options in Futures, how to unsuck them - Erik Bakker](https://www.youtube.com/watch?v=hGMndafDcc8)
 - [(0'30 hr) Programs as Values Pure Composable Database Access in Scala (Doobie/Free Monads/Free Functors) - Rob Norris](https://www.youtube.com/watch?v=XHiTK4UOIf0)
+- [(0'29 hr) Building a Better Future: Advanced Error Handling for Concurrent Programming with Scalaz - Jean-Rémi Desjardins & Eddie Carlson](https://www.youtube.com/watch?v=tU4pU5vaddU)
+- [(2'00 hr) Explorations in Variance - Michael Pilquist](https://www.youtube.com/watch?v=VZWLRepyNvo)
+- [(0'38 hr) Shapeless Meets Implicit Macros - Miles Sabin](https://www.youtube.com/watch?v=9w1PDnD5mPc)
 
 ## Resources
 - [Type Typeclassopedia - Slides](http://typeclassopedia.bitbucket.org/)
