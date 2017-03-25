@@ -1581,14 +1581,58 @@ scala> val (person, _) = xs.traverseS(handleEvent).run(none[Person])
 person: Option[Person] = Some(Person(Bar,44))
 ```
 
+## IO Monad
+- http://underscore.io/blog/posts/2015/04/28/monadic-io-laziness-makes-you-free.html
+- https://apocalisp.wordpress.com/2011/12/19/towards-an-effect-system-in-scala-part-2-io-monad/
+- http://eed3si9n.com/learning-scalaz/IO+Monad.html
+
 ## Reader Monad
 The Reader monad can be used to easily pass configuration (or other values) around, and can be used for stuff like dependency injection.
+
+The Reader Monad is a monad that allows us to compose operations that depend on some input. Instances of Reader
+wrap up functions of one argument, providing us with useful methods for composing them.
+
+One common use for Readers is injecting configuration. If we have a number of operations that all depend on some external
+configuration, we can chain them together using a Reader. The Reader produces one large operation that accepts the
+configuration as a parameter and runs our program in the order we specified it.
+
+## State Monad
+The State Monad allows us to pass additional state around as part of a computation. We define State instances representing
+atomic operations on the state, and thread them together using map and flatMap. In this way we can model mutable state in a
+purely functional way, without using mutation.
+
+- get extracts the state as the result;
+- set updates the state and returns unit as the result;
+- pure ignores the state and returns a supplied result;
+- inspect extracts the state via a transformation function;
+- modify updates the state using an update function.
 
 ## Writer Monad
 Keep track of a sort of logging during a set of operations
 
+The Writer Monad is a monad that lets us carry a log along with a computation. We can use it to record messages, errors,
+or additional data about a computation, and extract the log with the final result.
+
+One common use for Writers is recording sequences of steps in multi-threaded computations, where standard imperative
+logging techniques can result in interleaved messages from different contexts. With Writer the log for the computation
+is tied to the result, so we can run concurrent computations without mixing logs.
+
+## Eval Monad
+The Eval Monad is a monad that allows us to abstract over different models of evaluation. We typically hear of two such models:
+`eager` and `lazy`. Eval throws in a further distinction of memoized and unmemoized to create three models of evaluation:
+
+- now—evaluated once immediately (equivalent to val);
+- later—evaluated once when the value is first needed (equivalent to lazy val);
+- always—evaluated every time the value is needed (equivalent to def).
+
 ## Monad Transformers
-...
+Monad transformers are builders to create monads. We use monad transformers to build monads,
+which we then use via the Monad type class. Thus the main points of interest when using monad transformers are:
+
+the available transformer classes;
+building stacks of monads using transformers;
+constructing instances of a monad stack; and
+pulling apart a stack to access the wrapped monads.
 
 ## Cake Pattern
 ...
