@@ -1631,6 +1631,7 @@ Keep track of a sort of logging during a set of operations
 - [(1'07 hr) Don't fear the Monad - Brian Beckman](https://www.youtube.com/watch?v=ZhuHCtR3xq8)
 - [(2'03 hr) Scalaz State Monad - Michael Pilquist](https://www.youtube.com/watch?v=Jg3Uv_YWJqI)
 - [(0'30 hr) Scalaz 7 - Lars Hupel](https://www.youtube.com/watch?v=KzoqOVD7mvE&t=1590s)
+- [(9'28 hr) How to Write a Functional Program with IO, Mutation, and other effects - Paul Chiusano](https://www.youtube.com/watch?v=1gZAqJA2pEk)
 - [(1'06 hr) The Zen of Stateless State - The State Monad - Brian Beckman](https://www.youtube.com/watch?v=XxzzJiXHOJs)
 - [(0'32 hr) The Reader Monad for Depencency Injection - Jason Arhart](https://www.youtube.com/watch?v=xPlsVVaMoB0)
 - [(0'27 hr) Reader Monad & Free Monad - Rúnar Bjarnason](https://www.youtube.com/watch?v=ZasXwtTRkio)

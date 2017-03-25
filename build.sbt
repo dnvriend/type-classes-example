@@ -8,7 +8,7 @@ scalaVersion := "2.12.1"
 
 // functional and typelevel programming
 // https://github.com/scalaz/scalaz
-val scalazVersion = "7.2.8"
+val scalazVersion = "7.2.10"
 libraryDependencies += "org.scalaz" %% "scalaz-core" % scalazVersion
 libraryDependencies += "org.scalaz" %% "scalaz-effect" % scalazVersion
 libraryDependencies += "org.scalaz" %% "scalaz-concurrent" % scalazVersion
@@ -16,18 +16,18 @@ libraryDependencies += "org.scalaz" %% "scalaz-concurrent" % scalazVersion
 /////////////////
 // JSON libraries
 // play-json
-libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.0-M1"
+libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.0-M6"
 // akka-http-spray-json
-libraryDependencies += "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.1"
+libraryDependencies += "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.5"
 
 // https://github.com/mpilquist/simulacrum
 libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.10.0"
 
 // testing
 // https://github.com/typelevel/scalaz-scalatest
-libraryDependencies += "org.typelevel" %% "scalaz-scalatest" % "1.1.1"
+libraryDependencies += "org.typelevel" %% "scalaz-scalatest" % "1.1.2"
 // https://github.com/scalatest/scalatest
-libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.4"
+libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.5"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1"
 
 // testing configuration
@@ -50,8 +50,8 @@ SbtScalariform.autoImport.scalariformPreferences := SbtScalariform.autoImport.sc
 import de.heikoseeberger.sbtheader.license.Apache2_0
 
 headers := Map(
-  "scala" -> Apache2_0("2016", "Dennis Vriend"),
-  "conf" -> Apache2_0("2016", "Dennis Vriend", "#")
+  "scala" -> Apache2_0("2017", "Dennis Vriend"),
+  "conf" -> Apache2_0("2017", "Dennis Vriend", "#")
 )
 
 // https://github.com/scalamacros/paradise
