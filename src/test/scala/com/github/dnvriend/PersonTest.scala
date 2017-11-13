@@ -20,6 +20,20 @@ import scalaz._
 import Scalaz._
 
 class PersonTest extends TestSpec {
+  it should "validate lt" in {
+    Person.validateLt("number", 100, 99) should beSuccess(99)
+    Person.validateLt("number", 100, 100) should beSuccess(100)
+    Person.validateLt("number", 100, 101) should haveFailure("Field 'number' with value '101' must be less than '100'")
+  }
+
+  it should "validate gt" in {
+    Person.validateGt("number", 100, 101) should beSuccess(101)
+  }
+
+  it should "validate nonEmpty" in {
+    Person.validateNonEmpty("name", "aaa") should beSuccess("aaa")
+  }
+
   it should "create a person" in {
     Person("foo", 42) shouldBe Person("foo", 42)
     Person.validate("foo", 42) should beSuccess(Person("foo", 42))

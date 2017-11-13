@@ -4,31 +4,20 @@ organization := "com.github.dnvriend"
 
 version := "1.0.0"
 
-scalaVersion := "2.12.1"
+scalaVersion := "2.12.4"
 
 // functional and typelevel programming
 // https://github.com/scalaz/scalaz
-val scalazVersion = "7.2.10"
+val scalazVersion = "7.2.16"
+val playJsonVersion = "2.6.7"
 libraryDependencies += "org.scalaz" %% "scalaz-core" % scalazVersion
 libraryDependencies += "org.scalaz" %% "scalaz-effect" % scalazVersion
 libraryDependencies += "org.scalaz" %% "scalaz-concurrent" % scalazVersion
-
-/////////////////
-// JSON libraries
-// play-json
-libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.0-M6"
-// akka-http-spray-json
-libraryDependencies += "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.5"
-
-// https://github.com/mpilquist/simulacrum
-libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.10.0"
-
-// testing
-// https://github.com/typelevel/scalaz-scalatest
-libraryDependencies += "org.typelevel" %% "scalaz-scalatest" % "1.1.2"
-// https://github.com/scalatest/scalatest
-libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.5"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1"
+libraryDependencies += "com.typesafe.play" %% "play-json" % playJsonVersion
+libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.11.0"
+libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.13.5" % Test
+libraryDependencies += "org.typelevel" %% "scalaz-scalatest" % "1.1.2" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % Test
 
 // testing configuration
 fork in Test := true
@@ -37,28 +26,28 @@ parallelExecution := false
 licenses +=("Apache-2.0", url("http://opensource.org/licenses/apache2.0.php"))
 
 // enable scala code formatting //
+// Scalariform settings
 import scalariform.formatter.preferences._
 import com.typesafe.sbt.SbtScalariform
 
-// Scalariform settings
 SbtScalariform.autoImport.scalariformPreferences := SbtScalariform.autoImport.scalariformPreferences.value
   .setPreference(AlignSingleLineCaseStatements, true)
   .setPreference(AlignSingleLineCaseStatements.MaxArrowIndent, 100)
-  .setPreference(DoubleIndentClassDeclaration, true)
+  .setPreference(DoubleIndentConstructorArguments, true)
+  .setPreference(DanglingCloseParenthesis, Preserve)
 
 // enable updating file headers //
-import de.heikoseeberger.sbtheader.license.Apache2_0
-
-headers := Map(
-  "scala" -> Apache2_0("2017", "Dennis Vriend"),
-  "conf" -> Apache2_0("2017", "Dennis Vriend", "#")
-)
+// enable updating file headers //
+organizationName := "Dennis Vriend"
+startYear := Some(2017)
+licenses := Seq(("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")))
+headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.CppStyleLineComment)
 
 // https://github.com/scalamacros/paradise
 // http://docs.scala-lang.org/overviews/macros/paradise.html
-addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
 
-enablePlugins(AutomateHeaderPlugin, SbtScalariform)
+enablePlugins(SbtScalariform)
 
 initialize ~= { _ =>
   val ansi = System.getProperty("sbt.log.noformat", "false") != "true"

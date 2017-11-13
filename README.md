@@ -1654,7 +1654,11 @@ pulling apart a stack to access the wrapped monads.
 - [Isomorphism](http://mathworld.wolfram.com/Isomorphism.html): Iso='equal' and Morphism='to shape': An [Isomorphism](https://en.wikipedia.org/wiki/Isomorphism)
 - [Automorphism](http://mathworld.wolfram.com/Automorphism.html): Auto='self', Morphism='to shape': An [Automorphism](https://en.wikipedia.org/wiki/Automorphism)
 - [Homomorphism](http://mathworld.wolfram.com/Homomorphism.html): Homos='same', Morphism='to shape': [Homomorphism](https://en.wikipedia.org/wiki/Homomorphism)
-- [Catamorphism](https://wiki.haskell.org/Catamorphisms): Cata='downwards', Morphism='to shape': An [Catamorphisms](https://en.wikipedia.org/wiki/Catamorphism)
+- [Anamorphism](https://en.wikipedia.org/wiki/Anamorphism): Ana='upwards', morphism='to shape': used for
+- [Catamorphism](https://wiki.haskell.org/Catamorphisms): Cata='downwards', Morphism='to shape': An [Catamorphisms](https://en.wikipedia.org/wiki/Catamorphism),
+they are known as the fold, foldRight, foldLeft on eg. the List that folds the structure down to a single value, which is a catamorphism. Of course the fold
+is not limited to the List datastructure but the idea is that is should work for any datastructure.
+
 - [Endomorphism](http://mathworld.wolfram.com/Endomorphism.html): Endon='inside', Morphism='to shape': An [Endomorphism](https://en.wikipedia.org/wiki/Endomorphism) of a group is a homomorphism from one object to itself.
 
 ## YouTube
@@ -1692,6 +1696,9 @@ pulling apart a stack to access the wrapped monads.
 - [(0'29 hr) Building a Better Future: Advanced Error Handling for Concurrent Programming with Scalaz - Jean-Rémi Desjardins & Eddie Carlson](https://www.youtube.com/watch?v=tU4pU5vaddU)
 - [(2'00 hr) Explorations in Variance - Michael Pilquist](https://www.youtube.com/watch?v=VZWLRepyNvo)
 - [(0'38 hr) Shapeless Meets Implicit Macros - Miles Sabin](https://www.youtube.com/watch?v=9w1PDnD5mPc)
+- [(0'50 hr) Type-level Programming in Scala 101 - Joe Barnes](https://www.youtube.com/watch?v=DdJ6OmzbRBE)
+- [(0'48 hr) Introduction to Type-Level Programming - Alexander Lehmann](https://www.youtube.com/watch?v=WZOzxAP8NpI)
+- [(0'28 hr)Introduction to Recursion Schemes – Ratan Sebastian](https://www.youtube.com/watch?v=6m0J_XllHqQ)
 
 ## Resources
 - [Type Typeclassopedia - Slides](http://typeclassopedia.bitbucket.org/)
